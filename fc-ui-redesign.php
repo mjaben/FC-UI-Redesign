@@ -59,10 +59,7 @@ add_action( 'fluent_community/enqueue_global_assets', 'fc_ui_redesign_enqueue_as
  * Hooked to both standard wp_footer and Fluent Community specific portal actions.
  */
 function fc_ui_redesign_inject_nav_interceptor() {
-    // Only load on the frontend
-    if ( is_admin() ) {
-        return;
-    }
+    // Temporarily removed is_admin() check for debugging production
     
     // Prevent duplicate printing if both hooks fire
     static $printed = false;
@@ -155,4 +152,5 @@ add_action( 'wp_footer', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'wp_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_footer', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_header', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
+add_action( 'fluent_community/portal_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 
