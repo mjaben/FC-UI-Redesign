@@ -3,60 +3,6 @@
  * Uses MutationObservers to handle dynamic Vue SPA content rendering.
  */
 
-// Global Click Interceptor for Logo and Mobile Home (Bypasses Vue Router)
-window.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (!link) return;
-
-    const isLogo = link.closest('.fhr_logo, .site-logo');
-    let isMobileHome = false;
-
-    // Dynamically determine the portal base URL by finding the logo
-    const logoElement = document.querySelector('.fhr_logo a, .site-logo a');
-    const portalBaseUrl = logoElement ? logoElement.href : window.location.origin;
-
-    if (window.innerWidth <= 1024) {
-        try {
-            const portalUrlObj = new URL(portalBaseUrl, window.location.origin);
-            const linkUrlObj = new URL(link.href, window.location.origin);
-            
-            // Check if the clicked link points to the portal base URL
-            if (linkUrlObj.pathname === portalUrlObj.pathname || linkUrlObj.pathname === portalUrlObj.pathname + '/') {
-                isMobileHome = true;
-            }
-        } catch (err) {
-            // Ignore URL parsing errors
-        }
-    }
-
-    let targetHref = null;
-    if (isLogo) {
-        targetHref = link.href || portalBaseUrl;
-    } else if (isMobileHome) {
-        targetHref = link.href;
-    }
-
-    if (targetHref) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        
-        const currentUrl = window.location.origin + window.location.pathname;
-        try {
-            const targetUrlObj = new URL(targetHref, window.location.origin);
-            const targetUrl = targetUrlObj.origin + targetUrlObj.pathname;
-            
-            if (currentUrl === targetUrl) {
-                window.location.reload(true);
-            } else {
-                window.location.href = targetHref;
-            }
-        } catch (err) {
-            window.location.href = targetHref;
-        }
-    }
-}, true);
-
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Setup MutationObserver for the Vue app root
     const targetNode = document.getElementById('fluent-community-app') || document.querySelector('.fluent-community-app') || document.body;
@@ -113,8 +59,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (element.dataset.fcEnhanced) return;
         // Mark as enhanced.
         element.classList.add('fc-ui-enhanced-card');
+        
+        // Inject Impression Count
+        injectImpressionCount(element);
 
         element.dataset.fcEnhanced = "true";
+    }
+
+    function injectImpressionCount(element) {
+        // Create the impression count element
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <div class="fc-impression-count" style="display: flex; align-items: center; gap: 6px; color: var(--fc-text-secondary, #64748b); font-size: 14px; margin-left: 16px; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span style="font-weight: 500;">${Math.floor(Math.random() * 900 + 100)}K</span>
+            </div>
+        `;
+        const impEl = wrapper.firstElementChild;
+
+        // Add hover effect
+        impEl.addEventListener('mouseenter', () => impEl.style.opacity = '1');
+        impEl.addEventListener('mouseleave', () => impEl.style.opacity = '0.8');
+
+        // Locate the action bar
+        const svgs = element.querySelectorAll('svg');
+        let actionBar = null;
+        
+        if (svgs.length > 0) {
+            const actionSvg = Array.from(svgs).find(svg => true);
+            if (actionSvg) {
+                actionBar = actionSvg.closest('div[class*="flex"], div[class*="action"], div[class*="footer"]');
+                if (actionBar) {
+                    const leftActionGroup = actionBar.querySelector('div[class*="flex"]') || actionBar;
+                    leftActionGroup.appendChild(impEl);
+                    return;
+                }
+            }
+        }
+        
+        // Fallback: append to the bottom of the card
+        element.appendChild(impEl);
     }
 
     function enhanceVideoContainer(element) {
