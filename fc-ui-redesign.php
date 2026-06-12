@@ -25,7 +25,7 @@ function fc_ui_redesign_enqueue_assets() {
     }
 
     $css_path = FC_UI_REDESIGN_PATH . 'assets/css/main.css';
-    $js_path  = FC_UI_REDESIGN_PATH . 'assets/js/ui-enhancements.js';
+    $js_path  = FC_UI_REDESIGN_PATH . 'assets/js/ui-enhancements-v2.js';
 
     if ( file_exists( $css_path ) ) {
         // Enqueue with a very high priority / later in the queue if possible,
@@ -43,7 +43,7 @@ function fc_ui_redesign_enqueue_assets() {
     if ( file_exists( $js_path ) ) {
         wp_enqueue_script(
             'fc-ui-redesign-enhancements',
-            FC_UI_REDESIGN_URL . 'assets/js/ui-enhancements.js',
+            FC_UI_REDESIGN_URL . 'assets/js/ui-enhancements-v2.js',
             array(), // No jQuery dependency, using Vanilla JS
             filemtime( $js_path ),
             true // Load in footer

@@ -4,6 +4,7 @@
  */
 
 // Global Click Interceptor for Logo and Mobile Home (Bypasses Vue Router)
+console.log('FC UI Redesign Script Loaded (v2)');
 window.addEventListener('click', (e) => {
     const link = e.target.closest('a');
     if (!link) return;
