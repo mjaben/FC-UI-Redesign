@@ -74,6 +74,7 @@ function fc_ui_redesign_inject_nav_interceptor() {
     ?>
     <script>
     (function() {
+        console.log("FC UI Redesign: Navigation Interceptor Loaded");
         function __fc_interceptNav(e) {
             var target = e.target;
             if (target && target.nodeType === 3) target = target.parentNode;
