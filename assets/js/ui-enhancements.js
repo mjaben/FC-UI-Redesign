@@ -3,6 +3,82 @@
  * Uses MutationObservers to handle dynamic Vue SPA content rendering.
  */
 
+// Global Click Interceptor for Logo and Mobile Home (Bypasses Vue Router)
+(function() {
+    console.log("FC UI Redesign: JS Navigation Interceptor Loaded");
+    function __fc_interceptNav(e) {
+        var target = e.target;
+        if (target && target.nodeType === 3) target = target.parentNode;
+        if (!target || typeof target.closest !== 'function') return;
+
+        var isLogo = target.closest('.fhr_logo, .site-logo');
+        var link = target.closest('a');
+        
+        var logoEl = document.querySelector('.fhr_logo a, .site-logo a');
+        var portalUrl = logoEl ? logoEl.href : window.location.origin + '/';
+        var isMobileHome = false;
+
+        // Check if it's a click in the bottom navigation pointing to home on mobile
+        if (window.innerWidth <= 1024) {
+            var isBottomBar = false;
+            try {
+                var rect = target.getBoundingClientRect();
+                if (window.innerHeight - rect.bottom <= 100) {
+                    isBottomBar = true;
+                }
+            } catch(err) {}
+
+            var isHomePath = false;
+            if (link && link.href) {
+                try {
+                    var portalUrlObj = new URL(portalUrl, window.location.origin);
+                    var linkUrlObj = new URL(link.href, window.location.origin);
+                    if (linkUrlObj.pathname === portalUrlObj.pathname || linkUrlObj.pathname === portalUrlObj.pathname + '/' || linkUrlObj.pathname.includes('/discover/spaces') || linkUrlObj.pathname.includes('/feed')) {
+                        isHomePath = true;
+                    }
+                } catch (err) {}
+            }
+
+            // Strict class check or flexible coordinate check
+            var isMobileHomeItem = target.closest('.fcom_sm_only.fcom_home_link, .fcom_menu_item_home, .fcom_menu_item_feed, .fcom_menu_item_all_feeds, .focm_menu_item, .mobile-nav-home');
+
+            if (isMobileHomeItem || (isBottomBar && isHomePath)) {
+                isMobileHome = true;
+            }
+        }
+
+        var targetHref = null;
+        if (isLogo) {
+            targetHref = (link && link.href) ? link.href : portalUrl;
+        } else if (isMobileHome) { 
+            targetHref = (link && link.href) ? link.href : portalUrl;
+        }
+
+        if (targetHref) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            var currentUrl = window.location.origin + window.location.pathname;
+            try {
+                var targetUrlObj = new URL(targetHref, window.location.origin);
+                var targetUrl = targetUrlObj.origin + targetUrlObj.pathname;
+                
+                if (currentUrl === targetUrl) {
+                    window.location.reload(true);
+                } else {
+                    window.location.href = targetHref;
+                }
+            } catch (err) {
+                window.location.href = targetHref;
+            }
+        }
+    }
+
+    window.addEventListener('click', __fc_interceptNav, true);
+    window.addEventListener('touchend', __fc_interceptNav, true);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Setup MutationObserver for the Vue app root
     const targetNode = document.getElementById('fluent-community-app') || document.querySelector('.fluent-community-app') || document.body;

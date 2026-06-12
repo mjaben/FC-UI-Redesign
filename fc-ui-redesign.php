@@ -19,10 +19,6 @@ define( 'FC_UI_REDESIGN_URL', plugin_dir_url( __FILE__ ) );
  * Enqueue custom styles and scripts for the UI Redesign.
  */
 function fc_ui_redesign_enqueue_assets() {
-    // Only load on the frontend
-    if ( is_admin() ) {
-        return;
-    }
 
     $css_path = FC_UI_REDESIGN_PATH . 'assets/css/main.css';
     $js_path  = FC_UI_REDESIGN_PATH . 'assets/js/ui-enhancements.js';
@@ -59,8 +55,6 @@ add_action( 'fluent_community/enqueue_global_assets', 'fc_ui_redesign_enqueue_as
  * Hooked to both standard wp_footer and Fluent Community specific portal actions.
  */
 function fc_ui_redesign_inject_nav_interceptor() {
-    // Temporarily removed is_admin() check for debugging production
-    
     // Prevent duplicate printing if both hooks fire
     static $printed = false;
     if ( $printed ) {
@@ -71,7 +65,7 @@ function fc_ui_redesign_inject_nav_interceptor() {
     ?>
     <script>
     (function() {
-        console.log("FC UI Redesign: Navigation Interceptor Loaded");
+        console.log("FC UI Redesign: Inline Navigation Interceptor Loaded");
         function __fc_interceptNav(e) {
             var target = e.target;
             if (target && target.nodeType === 3) target = target.parentNode;
@@ -153,4 +147,3 @@ add_action( 'wp_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_footer', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_header', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
-
