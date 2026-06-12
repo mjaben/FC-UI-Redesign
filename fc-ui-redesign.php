@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FC UI Redesign
  * Description: Premium modern UI redesign for Fluent Community, blending clean X-like structures with an Apple-like aesthetic.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      Intasela
  * Text Domain: fc-ui-redesign
  */
@@ -45,11 +45,9 @@ function fc_ui_redesign_enqueue_assets() {
             'fc-ui-redesign-enhancements',
             FC_UI_REDESIGN_URL . 'assets/js/ui-enhancements.js',
             array(), // No jQuery dependency, using Vanilla JS
-            time(), // FORCE CACHE BUST for production troubleshooting
+            filemtime( $js_path ),
             false // Load in head, since headless portal skips wp_footer()
         );
-
-        // We removed wp_add_inline_script because headless portals don't trigger wp_print_scripts reliably
     }
 }
 // Use standard WP hook and Fluent Community specific hook
