@@ -3,6 +3,60 @@
  * Uses MutationObservers to handle dynamic Vue SPA content rendering.
  */
 
+// Global Click Interceptor for Logo and Mobile Home (Bypasses Vue Router)
+window.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    const isLogo = link.closest('.fhr_logo, .site-logo');
+    let isMobileHome = false;
+
+    // Dynamically determine the portal base URL by finding the logo
+    const logoElement = document.querySelector('.fhr_logo a, .site-logo a');
+    const portalBaseUrl = logoElement ? logoElement.href : window.location.origin;
+
+    if (window.innerWidth <= 1024) {
+        try {
+            const portalUrlObj = new URL(portalBaseUrl, window.location.origin);
+            const linkUrlObj = new URL(link.href, window.location.origin);
+            
+            // Check if the clicked link points to the portal base URL
+            if (linkUrlObj.pathname === portalUrlObj.pathname || linkUrlObj.pathname === portalUrlObj.pathname + '/') {
+                isMobileHome = true;
+            }
+        } catch (err) {
+            // Ignore URL parsing errors
+        }
+    }
+
+    let targetHref = null;
+    if (isLogo) {
+        targetHref = link.href || portalBaseUrl;
+    } else if (isMobileHome) {
+        targetHref = link.href;
+    }
+
+    if (targetHref) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        const currentUrl = window.location.origin + window.location.pathname;
+        try {
+            const targetUrlObj = new URL(targetHref, window.location.origin);
+            const targetUrl = targetUrlObj.origin + targetUrlObj.pathname;
+            
+            if (currentUrl === targetUrl) {
+                window.location.reload(true);
+            } else {
+                window.location.href = targetHref;
+            }
+        } catch (err) {
+            window.location.href = targetHref;
+        }
+    }
+}, true);
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Setup MutationObserver for the Vue app root
     const targetNode = document.getElementById('fluent-community-app') || document.querySelector('.fluent-community-app') || document.body;
