@@ -55,16 +55,12 @@ add_action( 'fluent_community/enqueue_global_assets', 'fc_ui_redesign_enqueue_as
  * Hooked to both standard wp_footer and Fluent Community specific portal actions.
  */
 function fc_ui_redesign_inject_nav_interceptor() {
-    // Prevent duplicate printing if both hooks fire
-    static $printed = false;
-    if ( $printed ) {
-        return;
-    }
-    $printed = true;
-    
     ?>
     <script>
     (function() {
+        if (window.__fc_nav_interceptor_loaded) return;
+        window.__fc_nav_interceptor_loaded = true;
+        
         console.log("FC UI Redesign: Inline Navigation Interceptor Loaded");
         function __fc_interceptNav(e) {
             var target = e.target;
