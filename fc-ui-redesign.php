@@ -78,7 +78,7 @@ function fc_ui_redesign_inject_nav_interceptor() {
             var portalUrl = logoEl ? logoEl.href : window.location.origin + '/';
             var isMobileHome = false;
 
-            // Check if it's a click in the bottom navigation pointing to home on mobile
+            /* Check if it's a click in the bottom navigation pointing to home on mobile */
             if (window.innerWidth <= 1024) {
                 var isBottomBar = false;
                 try {
@@ -99,7 +99,7 @@ function fc_ui_redesign_inject_nav_interceptor() {
                     } catch (err) {}
                 }
 
-                // Strict class check or flexible coordinate check
+                /* Strict class check or flexible coordinate check */
                 var isMobileHomeItem = target.closest('.fcom_sm_only.fcom_home_link, .fcom_menu_item_home, .fcom_menu_item_feed, .fcom_menu_item_all_feeds, .focm_menu_item, .mobile-nav-home');
 
                 if (isMobileHomeItem || (isBottomBar && isHomePath)) {
@@ -147,3 +147,5 @@ add_action( 'wp_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_footer', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_header', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
 add_action( 'fluent_community/portal_head', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
+add_action( 'fluent_community/before_portal_dom', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
+add_action( 'fluent_community/before_js_loaded', 'fc_ui_redesign_inject_nav_interceptor', 9999 );
